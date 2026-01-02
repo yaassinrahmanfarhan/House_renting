@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'post_house_screen.dart'; // Make sure this import matches your file name
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -17,7 +18,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final TextEditingController _fullNameController = TextEditingController();
   final TextEditingController _bioController = TextEditingController();
 
-  // 1. Fetch & Auto-Create Profile
   Future<Map<String, dynamic>> _getProfileData() async {
     final user = supabase.auth.currentUser;
     if (user == null) throw Exception("No user logged in");
@@ -49,7 +49,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return response;
   }
 
-  // 2. Update Profile Logic
   Future<void> _updateProfile() async {
     setState(() => _isSaving = true);
     try {
@@ -78,7 +77,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  // 3. Navigation & Auth Handlers
   Future<void> _handleSignOut() async {
     await supabase.auth.signOut();
     if (mounted) {
@@ -87,7 +85,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _openSettings() {
-    // Placeholder for future implementation
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text("Settings coming soon!")),
     );
@@ -125,7 +122,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         elevation: 0,
         centerTitle: true,
         actions: [
-          // Settings Icon (beside logout)
           IconButton(
             icon: const Icon(Icons.settings_outlined, color: Colors.black54),
             onPressed: _openSettings,
@@ -218,9 +214,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                             title: Text(house['title'], style: const TextStyle(fontWeight: FontWeight.bold)),
                             subtitle: Text("\$${house['price_per_month']}/mo"),
-                            trailing: IconButton(
-                              icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
-                              onPressed: () => _deleteHouse(house['id']),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                // --- EDIT BUTTON ---
+                                IconButton(
+                                  icon: const Icon(Icons.edit_outlined, color: Colors.blue),
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => AddPropertyScreen(houseData: house),
+                                      ),
+                                    );
+                                  },
+                                ),
+                                // --- DELETE BUTTON ---
+                                IconButton(
+                                  icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+                                  onPressed: () => _deleteHouse(house['id']),
+                                ),
+                              ],
                             ),
                           ),
                         );
