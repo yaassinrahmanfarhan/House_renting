@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'post_house_screen.dart'; // Ensure this filename matches yours (e.g., add_property_screen.dart)
+import 'post_house_screen.dart'; 
 import 'profile_screen.dart';
+import 'search_screen.dart'; // NEW: Import your search screen
+import 'house_details_screen.dart'; // NEW: Import your details screen
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -24,15 +26,14 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFE8F1F5),
-      // The body changes based on the index. If index is 0, show Home feed.
+      // CHANGE: Toggle between Home body and the Search Screen
       body: _selectedIndex == 0 
           ? _buildHomeBody() 
-          : const Center(child: Text("Search Screen Coming Soon")), 
+          : const SearchScreen(), 
       bottomNavigationBar: _buildBottomNav(),
     );
   }
 
-  // Separated the Home Content for better organization
   Widget _buildHomeBody() {
     return SafeArea(
       child: SingleChildScrollView(
@@ -103,7 +104,6 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ],
           ),
-          // Clicking the Avatar also goes to Profile
           GestureDetector(
             onTap: () => Navigator.push(
               context,
@@ -120,10 +120,15 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  // CHANGE: Making the home search bar navigate to the Search tab
   Widget _buildSearchSection() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16),
       child: TextField(
+        readOnly: true, // Prevents keyboard from opening here
+        onTap: () {
+          setState(() => _selectedIndex = 1); // Switch to Search Tab
+        },
         decoration: InputDecoration(
           hintText: 'Search by area...',
           prefixIcon: const Icon(Icons.search),
@@ -138,37 +143,50 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  // CHANGE: Wrapped in GestureDetector to open Details Screen
   Widget _buildPropertyCard(Map<String, dynamic> house) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)],
-      ),
-      child: Column(
-        children: [
-          ClipRRect(
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-            child: Image.network(
-              house['image_url'] ?? 'https://via.placeholder.com/400x200',
-              height: 200,
-              width: double.infinity,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) => Container(
-                height: 200, color: Colors.grey[300], child: const Icon(Icons.broken_image, size: 50),
+    return GestureDetector(
+      onTap: () {
+        // Convert Map to SearchProperty model for the Details page
+        final property = SearchProperty.fromMap(house);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HouseDetailsScreen(property: property),
+          ),
+        );
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)],
+        ),
+        child: Column(
+          children: [
+            ClipRRect(
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+              child: Image.network(
+                house['image_url'] ?? 'https://via.placeholder.com/400x200',
+                height: 200,
+                width: double.infinity,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) => Container(
+                  height: 200, color: Colors.grey[300], child: const Icon(Icons.broken_image, size: 50),
+                ),
               ),
             ),
-          ),
-          ListTile(
-            title: Text(house['title'], style: const TextStyle(fontWeight: FontWeight.bold)),
-            subtitle: Text(house['location_area']),
-            trailing: Text(
-              '\$${house['price_per_month']}',
-              style: const TextStyle(color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 18),
+            ListTile(
+              title: Text(house['title'], style: const TextStyle(fontWeight: FontWeight.bold)),
+              subtitle: Text(house['location_area']),
+              trailing: Text(
+                '\$${house['price_per_month']}',
+                style: const TextStyle(color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 18),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -178,19 +196,16 @@ class _HomeScreenState extends State<HomeScreen> {
       currentIndex: _selectedIndex,
       onTap: (index) {
         if (index == 2) {
-          // POST button: Opens the screen as a temporary page
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const AddPropertyScreen()),
           );
         } else if (index == 3) {
-          // PROFILE button: Opens the screen as a temporary page
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const ProfileScreen()),
           );
         } else {
-          // Change tabs for Home and Search
           setState(() => _selectedIndex = index);
         }
       },
