@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import 'login_screen.dart';
+import '../utils/validators.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -123,12 +124,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         controller: _usernameController,
                         hintText: 'e.g. Alex Johnson',
                         prefixIcon: Icons.person_outline,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter a username';
-                          }
-                          return null;
-                        },
+                        validator: AppValidators.validateUsername,
                       ),
 
                       const SizedBox(height: 24),
@@ -140,15 +136,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         hintText: 'alex@example.com',
                         prefixIcon: Icons.email_outlined,
                         keyboardType: TextInputType.emailAddress,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter an email';
-                          }
-                          if (!value.contains('@')) {
-                            return 'Please enter a valid email';
-                          }
-                          return null;
-                        },
+                        validator: AppValidators.validateEmail,
                       ),
 
                       const SizedBox(height: 24),
@@ -298,15 +286,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         TextFormField(
           controller: _passwordController,
           obscureText: _obscurePassword,
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'Please enter a password';
-            }
-            if (value.length < 6) {
-              return 'Password must be at least 6 characters';
-            }
-            return null;
-          },
+          validator: AppValidators.validatePassword,
           decoration: InputDecoration(
             hintText: '••••••••',
             hintStyle: const TextStyle(color: Colors.grey),

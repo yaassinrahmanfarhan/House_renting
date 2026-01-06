@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'post_house_screen.dart'; // Make sure this import matches your file name
+import 'settings_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -85,9 +86,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _openSettings() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Settings coming soon!")),
-    );
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const SettingsScreen()),
+    ).then((_) {
+      // This triggers when the user returns from the Settings screen.
+      // It forces the Profile Screen to rebuild and show updated name/username.
+      setState(() {});
+    });
   }
 
   Future<void> _deleteHouse(int houseId) async {

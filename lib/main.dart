@@ -4,13 +4,11 @@ import 'package:provider/provider.dart';
 import 'providers/auth_provider.dart';
 import 'screens/signup_screen.dart';
 import 'screens/home_screen.dart';
-import 'screens/login_screen.dart';
 
 // 1. The Entry Point: This is where the app "wakes up".
 Future<void> main() async {
   // Tells Flutter to wait until it's ready before starting the engine.
   WidgetsFlutterBinding.ensureInitialized();
-
   // Connects your app to your Supabase project.
   await Supabase.initialize(
     url: 'https://feycmrjvkgctstpydfex.supabase.co', // Paste your URL from Supabase Settings
@@ -18,8 +16,6 @@ Future<void> main() async {
   );
 
   runApp(
-    // 2. The Provider: This wraps your whole app so everyone can share data.
-    // For now, we leave it empty, but we will add AuthProvider here soon.
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
