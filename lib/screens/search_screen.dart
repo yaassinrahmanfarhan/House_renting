@@ -14,7 +14,7 @@ class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController _searchController = TextEditingController();
 
   // State for Filters
-  String _selectedSort = 'Newest';
+  //String _selectedSort = 'Newest';
   String _searchQuery = '';
   RangeValues _currentPriceRange = const RangeValues(0, 10000);
   int? _minRooms;
@@ -98,8 +98,6 @@ class _SearchScreenState extends State<SearchScreen> {
           // RESULTS STREAM
           Expanded(
             child: StreamBuilder<List<Map<String, dynamic>>>(
-              // Note: Client-side filtering for simplicity.
-              // For huge databases, use .select() with filters instead.
               stream: query,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
@@ -110,15 +108,14 @@ class _SearchScreenState extends State<SearchScreen> {
                   return const Center(child: Text("No properties found."));
                 }
 
-                // Filter data locally based on state
                 final filteredList = snapshot.data!.where((house) {
                   final matchesSearch =
                       house['title'].toString().toLowerCase().contains(
-                        _searchQuery.toLowerCase(),
-                      ) ||
+                            _searchQuery.toLowerCase(),
+                          ) ||
                       house['location_area'].toString().toLowerCase().contains(
-                        _searchQuery.toLowerCase(),
-                      );
+                            _searchQuery.toLowerCase(),
+                          );
                   final matchesPrice =
                       house['price_per_month'] >= _currentPriceRange.start &&
                       house['price_per_month'] <= _currentPriceRange.end;
@@ -345,29 +342,36 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
     );
   }
 }
-
 class SearchProperty {
+  final String id;
+  final String ownerId;
   final String title;
   final String address;
+  final String description;
   final int price;
   final int rooms;
   final String image;
 
   SearchProperty({
+    required this.id,
+    required this.ownerId,
     required this.title,
     required this.address,
+    required this.description,
     required this.price,
     required this.rooms,
     required this.image,
   });
 
-  // Factory to convert Supabase Map to our Model
   factory SearchProperty.fromMap(Map<String, dynamic> map) {
     return SearchProperty(
+      id: map['id'].toString(),
+      ownerId: map['owner_id'].toString(), // Critical for fetching owner data
       title: map['title'] ?? 'No Title',
       address: map['location_area'] ?? 'No Location',
+      description: map['description'] ?? 'No description provided.',
       price: (map['price_per_month'] ?? 0).toInt(),
-      rooms: (map['rooms'] ?? 0).toInt(),
+      rooms: map['rooms'] ?? 0,
       image: map['image_url'] ?? '',
     );
   }

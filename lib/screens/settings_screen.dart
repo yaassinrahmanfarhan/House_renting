@@ -11,7 +11,6 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   final supabase = Supabase.instance.client;
-  bool _notificationsEnabled = true;
   
   User? get user => supabase.auth.currentUser;
 

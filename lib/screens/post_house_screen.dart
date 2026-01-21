@@ -32,7 +32,6 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
   void initState() {
     super.initState();
     if (isEditing) {
-      // PRE-FILL DATA IF EDITING
       _houseNameController.text = widget.houseData!['title'] ?? '';
       _locationController.text = widget.houseData!['location_area'] ?? '';
       _priceController.text = widget.houseData!['price_per_month']?.toString() ?? '';

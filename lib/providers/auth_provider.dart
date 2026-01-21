@@ -17,7 +17,7 @@ class AuthProvider extends ChangeNotifier {
       final response = await _supabase.auth.signUp(
         email: email,
         password: password,
-        data: {'username': username}, // Extra data for our profiles table
+        data: {'username': username},
       );
 
       if (response.user != null) {
